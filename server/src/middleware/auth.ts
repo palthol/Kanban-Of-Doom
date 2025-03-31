@@ -17,27 +17,29 @@ declare global {
 }
 
 export const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
-  // Get the auth header
+  // Get token from header
   const authHeader = req.headers.authorization;
-  const token = authHeader?.split(' ')[1]; // Bearer TOKEN
-  
+  const token = authHeader && authHeader.split(' ')[1];
+   
+  console.log('Auth middleware: Token received:', !!token);
+   
   if (!token) {
-    res.status(401).json({ message: 'No token provided' });
-    return;
+    console.log('Auth middleware: No token provided');
+    return res.status(401).json({ message: 'Authentication required' });
   }
-  
+   
   try {
-    // Verify the token
     const decoded = jwt.verify(
       token, 
-      process.env.JWT_SECRET ?? 'your-secret-key'
+      process.env.JWT_SECRET_KEY ?? 'awesome_super_secure_secret_here'
     ) as UserPayload;
-    
-    // Add user data to request
+     
+    console.log('Auth middleware: Valid token for user:', decoded.username);
     req.user = decoded;
-    
     next();
   } catch (error) {
-    res.status(403).json({ message: 'Invalid or expired token' });
+    console.error('Auth middleware: Invalid token', error);
+    // Add this line to return a response for the error case:
+    return res.status(403).json({ message: 'Invalid or expired token' });
   }
 };
