@@ -16,16 +16,17 @@ declare global {
   }
 }
 
-export const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
-  // Get token from header
+export const authenticateToken = (req: Request, res: Response, next: NextFunction): void => {
+  // Get token from header using optional chaining
   const authHeader = req.headers.authorization;
-  const token = authHeader && authHeader.split(' ')[1];
+  const token = authHeader?.split(' ')[1];
    
   console.log('Auth middleware: Token received:', !!token);
    
   if (!token) {
     console.log('Auth middleware: No token provided');
-    return res.status(401).json({ message: 'Authentication required' });
+    res.status(401).json({ message: 'Authentication required' });
+    return;
   }
    
   try {
@@ -37,9 +38,10 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
     console.log('Auth middleware: Valid token for user:', decoded.username);
     req.user = decoded;
     next();
+    return; // Explicit return for TypeScript
   } catch (error) {
     console.error('Auth middleware: Invalid token', error);
-    // Add this line to return a response for the error case:
-    return res.status(403).json({ message: 'Invalid or expired token' });
+    res.status(403).json({ message: 'Invalid or expired token' });
+    return;
   }
 };
