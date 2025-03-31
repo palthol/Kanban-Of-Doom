@@ -19,10 +19,11 @@ declare global {
 export const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
   // Get the auth header
   const authHeader = req.headers.authorization;
-  const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+  const token = authHeader?.split(' ')[1]; // Bearer TOKEN
   
   if (!token) {
-    return res.status(401).json({ message: 'No token provided' });
+    res.status(401).json({ message: 'No token provided' });
+    return;
   }
   
   try {
@@ -37,6 +38,6 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
     
     next();
   } catch (error) {
-    return res.status(403).json({ message: 'Invalid or expired token' });
+    res.status(403).json({ message: 'Invalid or expired token' });
   }
 };
