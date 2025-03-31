@@ -22,9 +22,14 @@ export class User extends Model<UserAttributes, UserCreationAttributes> implemen
     const saltRounds = 10;
     this.password = await bcrypt.hash(password, saltRounds);
   }
+  
+  // Add a password comparison method for login
+  public async comparePassword(candidatePassword: string): Promise<boolean> {
+    return bcrypt.compare(candidatePassword, this.password);
+  }
 }
 
-export function UserFactory(sequelize: Sequelize): typeof User {
+export function initUser(sequelize: Sequelize): typeof User {
   User.init(
     {
       id: {
@@ -35,21 +40,27 @@ export function UserFactory(sequelize: Sequelize): typeof User {
       username: {
         type: DataTypes.STRING,
         allowNull: false,
+        unique: true, // Add unique constraint to prevent duplicate usernames
       },
       password: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(128), // Specify length to ensure it can hold bcrypt hashes
         allowNull: false,
       },
     },
     {
-      tableName: 'users',
+      tableName: 'users', // Keep lowercase table name
       sequelize,
+      modelName: 'User', // This is for JS/TS only, doesn't affect table name
       hooks: {
+        // Only set password if it has changed
         beforeCreate: async (user: User) => {
           await user.setPassword(user.password);
         },
         beforeUpdate: async (user: User) => {
-          await user.setPassword(user.password);
+          // Only rehash if password field was updated
+          if (user.changed('password')) {
+            await user.setPassword(user.password);
+          }
         },
       }
     }

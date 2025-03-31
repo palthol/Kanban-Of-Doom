@@ -30,7 +30,7 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
     // Verify the token
     const decoded = jwt.verify(
       token, 
-      process.env.JWT_SECRET || 'your-secret-key'
+      process.env.JWT_SECRET ?? 'your-secret-key'
     ) as UserPayload;
     
     // Add user data to request

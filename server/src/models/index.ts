@@ -2,11 +2,11 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import { Sequelize } from 'sequelize';
-import { UserFactory } from './user.js';
+import { initUser } from './user.js';  // Changed from UserFactory to initUser
 import { TicketFactory } from './ticket.js';
 
 // Use the database connection URL directly
-const sequelize = new Sequelize(process.env.DATABASE_URL || '', {
+const sequelize = new Sequelize(process.env.DATABASE_URL ?? '', {
   dialect: 'postgres',
   dialectOptions: {
     ssl: {
@@ -19,7 +19,7 @@ const sequelize = new Sequelize(process.env.DATABASE_URL || '', {
 });
 
 // Initialize models
-const User = UserFactory(sequelize);
+const User = initUser(sequelize);  // Changed from UserFactory to initUser
 const Ticket = TicketFactory(sequelize);
 
 // Define relationships
