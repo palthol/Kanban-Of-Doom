@@ -21,7 +21,8 @@ app.use(cors({
   origin: [
     'http://localhost:5173',  // Vite dev server default
     'http://localhost:3001',  // Alternative dev port
-    'http://localhost:5174'   // Vite preview default
+    'http://localhost:5174',  // Vite preview default
+    'http://localhost:3000'   // React default port
   ],
   credentials: true  // Allow cookies for authentication
 }));
