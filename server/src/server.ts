@@ -22,7 +22,8 @@ app.use(cors({
     'http://localhost:5173',  // Vite dev server default
     'http://localhost:3001',  // Alternative dev port
     'http://localhost:5174',  // Vite preview default
-    'http://localhost:3000'   // React default port
+    'http://localhost:3000' ,   // React default port
+    'https://kanban-of-doom.onrender.com'
   ],
   credentials: true  // Allow cookies for authentication
 }));
