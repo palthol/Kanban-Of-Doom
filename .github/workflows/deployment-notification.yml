@@ -1,0 +1,20 @@
+# .github/workflows/deployment-notification.yml
+name: Deployment Notification
+
+on:
+  deployment_status:  # Triggers when deployment status changes
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.deployment_status.state == 'success' || github.event.deployment_status.state == 'failure' }}
+    steps:
+      - name: Send Discord Notification
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          status: ${{ github.event.deployment_status.state }}
+          title: "Deployment ${{ github.event.deployment_status.state == 'success' && 'Successful' || 'Failed' }}"
+          description: "${{ github.repository }} has been deployed to ${{ github.event.deployment.environment }}"
+          url: ${{ github.event.deployment_status.target_url }}
+          color: ${{ github.event.deployment_status.state == 'success' && '0x28A745' || '0xDC3545' }}
